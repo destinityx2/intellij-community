@@ -112,7 +112,7 @@ public class StudyRunAction extends DumbAwareAction {
     final Project project = e.getProject();
     if (project != null) {
       StudyEditor studyEditor = StudyUtils.getSelectedStudyEditor(project);
-      if (studyEditor != null) {
+      if (studyEditor != null && studyEditor.getTaskFile() != null) {
         final List<UserTest> userTests = StudyTaskManager.getInstance(project).getUserTests(studyEditor.getTaskFile().getTask());
         if (!userTests.isEmpty()) {
           EduUtils.enableAction(e, true);

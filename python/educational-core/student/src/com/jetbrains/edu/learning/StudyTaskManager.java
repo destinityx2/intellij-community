@@ -38,6 +38,7 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   public static final int CURRENT_VERSION = 3;
   private StepicUser myUser = new StepicUser();
   private Course myCourse;
+  private TaskFile myCurrentTaskFile;
   public int VERSION = 3;
 
   public Map<Task, List<UserTest>> myUserTests = new HashMap<>();
@@ -64,6 +65,14 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   @Nullable
   public Course getCourse() {
     return myCourse;
+  }
+
+  public void setCurrentTaskFile(TaskFile taskFile) {
+    myCurrentTaskFile = taskFile;
+  }
+
+  public TaskFile getCurrentTaskFile() {
+    return myCurrentTaskFile;
   }
 
   public void setStatus(AnswerPlaceholder placeholder, StudyStatus status) {
