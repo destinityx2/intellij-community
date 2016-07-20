@@ -96,15 +96,12 @@ public class StudyEditorFactoryListener implements EditorFactoryListener {
         return;
       }
 
-      StudyEditor.addDocumentListener(document, new EduDocumentListener(taskFile, true));
+      StudyEditor.addDocumentListener(document, new EduDocumentListener(taskFile));
 
       if (!taskFile.getAnswerPlaceholders().isEmpty()) {
         StudyNavigator.navigateToFirstAnswerPlaceholder(editor, taskFile);
-        boolean isStudyProject = EduNames.STUDY.equals(course.getCourseMode());
         StudyUtils.drawAllWindows(editor, taskFile);
-        if (isStudyProject) {
-          editor.addEditorMouseListener(new WindowSelectionListener(taskFile));
-        }
+        editor.addEditorMouseListener(new WindowSelectionListener(taskFile));
       }
       Task task = taskFile.getTask();
       if (!task.getAdditionalSteps().isEmpty()) {
