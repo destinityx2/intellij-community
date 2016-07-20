@@ -38,7 +38,7 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
   public static final int CURRENT_VERSION = 3;
   private StepicUser myUser = new StepicUser();
   private Course myCourse;
-  private TaskFile myCurrentTaskFile;
+  private Task myCurrentTask;
   public int VERSION = 3;
 
   public Map<Task, List<UserTest>> myUserTests = new HashMap<>();
@@ -67,12 +67,12 @@ public class StudyTaskManager implements PersistentStateComponent<Element>, Dumb
     return myCourse;
   }
 
-  public void setCurrentTaskFile(TaskFile taskFile) {
-    myCurrentTaskFile = taskFile;
+  public void setCurrentTask(Task task) {
+    myCurrentTask = task;
   }
 
-  public TaskFile getCurrentTaskFile() {
-    return myCurrentTaskFile;
+  public Task getCurrentTask() {
+    return myCurrentTask;
   }
 
   public void setStatus(AnswerPlaceholder placeholder, StudyStatus status) {

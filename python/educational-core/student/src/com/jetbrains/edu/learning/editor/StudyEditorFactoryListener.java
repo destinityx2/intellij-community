@@ -27,6 +27,7 @@ import com.jetbrains.edu.learning.ui.StudyToolWindowFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.Map;
 
 
 public class StudyEditorFactoryListener implements EditorFactoryListener {
@@ -61,37 +62,53 @@ public class StudyEditorFactoryListener implements EditorFactoryListener {
       return;
     }
 
-
     final Document document = editor.getDocument();
     final VirtualFile openedFile = FileDocumentManager.getInstance().getFile(document);
     if (openedFile != null) {
-      final TaskFile taskFile = StudyUtils.getTaskFile(project, openedFile);
-      if (taskFile != null) {
-        WolfTheProblemSolver.getInstance(project).clearProblems(openedFile);
-        final ToolWindow studyToolWindow = ToolWindowManager.getInstance(project).getToolWindow(StudyToolWindowFactory.STUDY_TOOL_WINDOW);
-        if (studyToolWindow != null) {
-          StudyUtils.updateToolWindows(project);
-          studyToolWindow.show(null);
-        }
-        Course course = StudyTaskManager.getInstance(project).getCourse();
-        if (course == null) {
-          return;
-        }
+      Task currentTask = StudyTaskManager.getInstance(project).getCurrentTask();
+      if (currentTask == null) {
+        return;
+      }
 
-        StudyEditor.addDocumentListener(document, new EduDocumentListener(taskFile, true));
+      // Get first task file
+      Map<String, TaskFile> taskFiles = currentTask.getTaskFiles();
+      if (taskFiles == null || taskFiles.isEmpty()) {
+        return;
+      }
 
-        if (!taskFile.getAnswerPlaceholders().isEmpty()) {
-          StudyNavigator.navigateToFirstAnswerPlaceholder(editor, taskFile);
-          boolean isStudyProject = EduNames.STUDY.equals(course.getCourseMode());
-          StudyUtils.drawAllWindows(editor, taskFile);
-          if (isStudyProject) {
-            editor.addEditorMouseListener(new WindowSelectionListener(taskFile));
-          }
+      TaskFile taskFile = taskFiles.entrySet().iterator().next().getValue();
+
+      VirtualFile virtualFileForCurrentTaskFile = StudyUtils.getVirtualFileForTaskFile(project, taskFile);
+
+      if (!StudyUtils.equalFiles(virtualFileForCurrentTaskFile, openedFile)) {
+        return;
+      }
+
+      //final TaskFile taskFile = StudyUtils.getTaskFile(project, openedFile);
+      WolfTheProblemSolver.getInstance(project).clearProblems(openedFile);
+      final ToolWindow studyToolWindow = ToolWindowManager.getInstance(project).getToolWindow(StudyToolWindowFactory.STUDY_TOOL_WINDOW);
+      if (studyToolWindow != null) {
+        StudyUtils.updateToolWindows(project);
+        studyToolWindow.show(null);
+      }
+      Course course = StudyTaskManager.getInstance(project).getCourse();
+      if (course == null) {
+        return;
+      }
+
+      StudyEditor.addDocumentListener(document, new EduDocumentListener(taskFile, true));
+
+      if (!taskFile.getAnswerPlaceholders().isEmpty()) {
+        StudyNavigator.navigateToFirstAnswerPlaceholder(editor, taskFile);
+        boolean isStudyProject = EduNames.STUDY.equals(course.getCourseMode());
+        StudyUtils.drawAllWindows(editor, taskFile);
+        if (isStudyProject) {
+          editor.addEditorMouseListener(new WindowSelectionListener(taskFile));
         }
-        Task task = taskFile.getTask();
-        if (!task.getAdditionalSteps().isEmpty()) {
-          StudyUtils.drawPlaceholdersFromOtherSteps(editor, taskFile, task);
-        }
+      }
+      Task task = taskFile.getTask();
+      if (!task.getAdditionalSteps().isEmpty()) {
+        StudyUtils.drawPlaceholdersFromOtherSteps(editor, taskFile, task);
       }
     }
   }

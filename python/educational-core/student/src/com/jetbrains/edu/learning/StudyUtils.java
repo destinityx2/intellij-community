@@ -26,6 +26,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.Disposer;
@@ -179,6 +180,18 @@ public class StudyUtils {
       }
       studyToolWindow.updateCourseProgress(project);
     }
+  }
+
+  public static VirtualFile getVirtualFileForTaskFile(@NotNull Project project, @NotNull TaskFile taskFile) {
+    return project.getBaseDir().findFileByRelativePath(taskFile.name);
+  }
+
+  public static boolean equalFiles(@Nullable VirtualFile f1, @Nullable VirtualFile f2) {
+    if (f1 == null || f2 == null || f1.getCanonicalPath() == null) {
+      return false;
+    }
+
+    return f1.getCanonicalPath().equals(f2.getCanonicalPath());
   }
 
   public static void initToolWindows(@NotNull final Project project) {
@@ -553,16 +566,14 @@ public class StudyUtils {
 
   @Nullable
   public static String getTaskText(@NotNull final Project project) {
-    TaskFile taskFile = getSelectedTaskFile(project);
-    if (taskFile == null) {
+    final Task task = StudyTaskManager.getInstance(project).getCurrentTask();
+    if (task == null) {
       return EMPTY_TASK_TEXT;
     }
-    final Task task = taskFile.getTask();
-    if (task != null) {
-      return getTaskTextFromTask(task.getTaskDir(project), task);
-    }
-    return null;
+
+    return getTaskTextFromTask(task.getTaskDir(project), task);
   }
+
   @Nullable
   public static TaskFile getSelectedTaskFile(@NotNull Project project) {
     VirtualFile[] files = FileEditorManager.getInstance(project).getSelectedFiles();
