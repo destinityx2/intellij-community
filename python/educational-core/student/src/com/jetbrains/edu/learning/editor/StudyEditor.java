@@ -38,6 +38,9 @@ public class StudyEditor extends PsiAwareTextEditorImpl {
       myTaskFile = taskFiles.entrySet().iterator().next().getValue();
     }
 
+    if (myTaskFile == null)
+      return;
+
     if (!StudyUtils.equalFiles(file, StudyUtils.getVirtualFileForTaskFile(project, myTaskFile))) {
       myTaskFile = null;
     }

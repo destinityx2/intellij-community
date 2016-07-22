@@ -10,6 +10,7 @@ import com.intellij.openapi.wm.ToolWindowId;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.ui.tree.TreeUtil;
 import com.jetbrains.edu.learning.StudyState;
+import com.jetbrains.edu.learning.StudyTaskManager;
 import com.jetbrains.edu.learning.StudyUtils;
 import com.jetbrains.edu.learning.core.EduNames;
 import com.jetbrains.edu.learning.courseFormat.Task;
@@ -32,18 +33,31 @@ abstract public class StudyTaskNavigationAction extends StudyActionWithShortcut 
   }
 
   public void navigateTask(@NotNull final Project project) {
-    StudyEditor studyEditor = StudyUtils.getSelectedStudyEditor(project);
-    StudyState studyState = new StudyState(studyEditor);
-    if (!studyState.isValid()) {
+    Task currentTask = StudyTaskManager.getInstance(project).getCurrentTask();
+    if (currentTask == null) {
       return;
     }
-    Task targetTask = getTargetTask(studyState.getTask());
+
+    Task targetTask = getTargetTask(currentTask);
+    StudyTaskManager.getInstance(project).setCurrentTask(targetTask);
     if (targetTask == null) {
       return;
     }
     for (VirtualFile file : FileEditorManager.getInstance(project).getOpenFiles()) {
       FileEditorManager.getInstance(project).closeFile(file);
     }
+
+    // Open necessary files
+    VirtualFile baseDir = project.getBaseDir();
+    for (Map.Entry<String, TaskFile> entry: targetTask.getTaskFiles().entrySet()) {
+      TaskFile taskFile = entry.getValue();
+      VirtualFile virtualFile = baseDir.findFileByRelativePath(taskFile.name);
+      if (virtualFile != null) {
+        //FileEditorManager.getInstance(project).openTextEditor(new OpenFileDescriptor(project, virtualFile), true);
+        FileEditorManager.getInstance(project).openFile(virtualFile, true);
+      }
+    }
+
     int nextTaskIndex = targetTask.getIndex();
     int lessonIndex = targetTask.getLesson().getIndex();
     Map<String, TaskFile> nextTaskFiles = targetTask.getTaskFiles();
