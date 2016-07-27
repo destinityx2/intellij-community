@@ -798,4 +798,39 @@ public class StudyUtils {
     }
     return task.getAdditionalSteps().get(activeStepIndex).getTaskFiles();
   }
+
+  public static VirtualFile getTaskDir(@NotNull Project project, @NotNull Task task) {
+    Lesson lesson = task.getLesson();
+    Course course = lesson.getCourse();
+
+    List<Lesson> lessons = course.getLessons();
+    List<Task> taskList = lesson.getTaskList();
+
+    boolean found = false;
+    int lessonInd = 0;
+    int taskInd = 0;
+    for (; lessonInd < lessons.size() && !found; ++lessonInd) {
+      if (lessons.get(lessonInd) == lesson) {
+        for (; taskInd < taskList.size() && !found; ++taskInd) {
+          if (taskList.get(taskInd) == task) {
+            found = true;
+          }
+        }
+      }
+    }
+
+    VirtualFile tasksDir = project.getBaseDir().findChild("tasks");
+    if (tasksDir == null)
+      return null;
+
+    VirtualFile lessonDir = tasksDir.findChild("lesson" + lessonInd);
+    if (lessonDir == null)
+      return null;
+
+    VirtualFile taskDir = lessonDir.findChild("task" + taskInd);
+    if (taskDir == null)
+      return null;
+
+    return taskDir;
+  }
 }

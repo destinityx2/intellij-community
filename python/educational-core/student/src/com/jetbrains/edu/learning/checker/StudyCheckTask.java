@@ -46,8 +46,10 @@ public class StudyCheckTask extends com.intellij.openapi.progress.Task.Backgroun
     myCheckInProcess = checkInProcess;
     myTestProcess = testProcess;
     myCommandLine = commandLine;
-    myTask = studyState.getTask();
-    myTaskDir = studyState.getTaskDir();
+    //myTask = studyState.getTask();
+    //myTaskDir = studyState.getTaskDir();
+    myTask = StudyTaskManager.getInstance(project).getCurrentTask();
+    myTaskDir = StudyUtils.getTaskDir(project, myTask);
     myTaskManger = StudyTaskManager.getInstance(myProject);
     myStatusBeforeCheck = myTask.getStatus();
   }
