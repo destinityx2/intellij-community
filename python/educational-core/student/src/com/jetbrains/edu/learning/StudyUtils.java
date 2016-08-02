@@ -799,6 +799,11 @@ public class StudyUtils {
     return task.getAdditionalSteps().get(activeStepIndex).getTaskFiles();
   }
 
+  public static VirtualFile getTasksDir(@NotNull Project project) {
+    VirtualFile tasksDirParent = project.getBaseDir().findFileByRelativePath(EduNames.TASKS_DIR_PARENT_PATH);
+    return tasksDirParent != null ? tasksDirParent.findChild(EduNames.TASKS_DIR) : null;
+  }
+
   public static VirtualFile getTaskDir(@NotNull Project project, @NotNull Task task) {
     Lesson lesson = task.getLesson();
     Course course = lesson.getCourse();
@@ -819,7 +824,7 @@ public class StudyUtils {
       }
     }
 
-    VirtualFile tasksDir = project.getBaseDir().findChild("tasks");
+    VirtualFile tasksDir = getTasksDir(project);
     if (tasksDir == null)
       return null;
 

@@ -52,6 +52,9 @@ public class EduNames {
 
   public static final String STEP_MARKER = "_step";
   public static final String STEP = "step";
+
+  public static final String TASKS_DIR = "tasks";
+  public static final String TASKS_DIR_PARENT_PATH = ".idea/";
   private EduNames() {
   }
 
